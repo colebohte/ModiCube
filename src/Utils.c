@@ -24,7 +24,16 @@ cc_bool Utils_IsUrlPrefix(const cc_string* value) {
 }
 
 cc_bool Utils_IsFilePath(const cc_string* value) {
-	return String_IndexOf(value, '/') >= 0 || String_IndexOf(value, '\\') >= 0;
+	if (Utils_IsUrlPrefix(value)) return false;
+
+	/* Only consider it a local path if it looks like a real filesystem path.
+	   This avoids misclassifying server skin identifiers such as "foo/bar". */
+	if (value->length >= 1 && value->buffer[0] == '/') return true;
+	if (value->length >= 2 && value->buffer[0] == '.' && (value->buffer[1] == '/' || value->buffer[1] == '\\')) return true;
+	if (value->length >= 3 && value->buffer[0] == '.' && value->buffer[1] == '.' && (value->buffer[2] == '/' || value->buffer[2] == '\\')) return true;
+	if (value->length >= 2 && value->buffer[0] == '\\' && value->buffer[1] == '\\') return true;
+	if (value->length >= 3 && ((value->buffer[1] == ':' && (value->buffer[2] == '/' || value->buffer[2] == '\\')))) return true;
+	return false;
 }
 
 cc_bool Utils_EnsureDirectory(const char* dirName) {

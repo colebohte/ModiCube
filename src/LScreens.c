@@ -720,14 +720,15 @@ LAYOUTS main_lblStatus[] = { { ANCHOR_CENTRE,   0 }, { ANCHOR_CENTRE,  20 } };
 LAYOUTS main_btnResume[]  = { { ANCHOR_CENTRE, 90 }, { ANCHOR_CENTRE, -25 } };
 LAYOUTS main_btnDirect[]  = { { ANCHOR_CENTRE,  0 }, { ANCHOR_CENTRE,  60 } };
 LAYOUTS main_btnSPlayer[] = { { ANCHOR_CENTRE,  0 }, { ANCHOR_CENTRE, 110 } };
-LAYOUTS main_btnSplit[]   = { { ANCHOR_CENTRE,  0 }, { ANCHOR_CENTRE, 160 } };
+LAYOUTS main_btnSplit[]   = { { ANCHOR_CENTRE,  0 }, { ANCHOR_CENTRE, 250 } };
 
 LAYOUTS main_btnRegister[] = { { ANCHOR_MIN,    6 }, { ANCHOR_MAX,  6 } };
 LAYOUTS main_btnOptions[]  = { { ANCHOR_CENTRE, 0 }, { ANCHOR_MAX,  6 } };
-LAYOUTS main_btnSkin[]     = { { ANCHOR_MAX, 120 }, { ANCHOR_MAX,  6 } };
+LAYOUTS main_btnSkin[]     = { { ANCHOR_CENTRE, 0 }, { ANCHOR_CENTRE, 160 } };
 LAYOUTS main_btnUpdates[]  = { { ANCHOR_MAX,    6 }, { ANCHOR_MAX,  6 } };
 
-LAYOUTS main_lblSkin[]     = { { ANCHOR_CENTRE, 0 }, { ANCHOR_MAX, 40 } };
+/* Position skin label below the skin button */
+LAYOUTS main_lblSkin[]     = { { ANCHOR_CENTRE, 0 }, { ANCHOR_CENTRE, 200 } };
 LAYOUTS main_lblUpdate_N[] = { { ANCHOR_MAX,   10 }, { ANCHOR_MAX, 45 } };
 LAYOUTS main_lblUpdate_H[] = { { ANCHOR_MAX,   10 }, { ANCHOR_MAX, 6 } };
 
@@ -913,10 +914,10 @@ static void MainScreen_Activated(struct LScreen* s_) {
 			SwitchToSplitScreen,     main_btnSplit);
 #endif
 
-	LButton_Add(s, &s->btnSkin,   100, 35, "Choose skin",
+	LButton_Add(s, &s->btnSkin,   200, 35, "Choose skin",
 			MainScreen_ChooseSkin, main_btnSkin);
 	if (Process_OpenSupported) {
-		LButton_Add(s, &s->btnRegister, 100, 35, "Register", 
+		LButton_Add(s, &s->btnRegister, 100, 35, "Support", 
 					MainScreen_Register, main_btnRegister);
 	}
 

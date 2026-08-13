@@ -17,6 +17,7 @@
 #include "Camera.h"
 #include "Http.h"
 #include "Block.h"
+#include "Constants.h"
 #include "Menus.h"
 #include "World.h"
 #include "Input.h"
@@ -71,6 +72,8 @@ static struct HUDScreen {
 	Screen_Body
 	struct FontDesc font;
 	struct TextWidget line1, line2;
+	struct TextWidget lineServer;
+	struct TextWidget lineDir;
 	struct TextAtlas posAtlas;
 	float accumulator;
 	int frames, posCount;
@@ -85,44 +88,63 @@ static struct HUDScreen {
 #define POSITION_VAL_CHARS 11
 /* [PREFIX] [(] [X] [,] [Y] [,] [Z] [)] */
 #define POSITION_HUD_CHARS (1 + 1 + POSITION_VAL_CHARS + 1 + POSITION_VAL_CHARS + 1 + POSITION_VAL_CHARS + 1)
-#define HUD_MAX_VERTICES (4 + TEXTWIDGET_MAX * 2 + HOTBAR_MAX_VERTICES + POSITION_HUD_CHARS * 4)
+#define HUD_MAX_VERTICES (4 + TEXTWIDGET_MAX * 4 + HOTBAR_MAX_VERTICES + POSITION_HUD_CHARS * 4)
 
 static void HUDScreen_RemakeLine1(struct HUDScreen* s) {
-	cc_string status; char statusBuffer[STRING_SIZE * 2];
-	int indices, ping, fps;
-	float real_fps;
+	cc_string ver; char verBuffer[STRING_SIZE];
 
-	String_InitArray(status, statusBuffer);
 	/* Don't remake texture when FPS isn't being shown */
 	if (!Gui.ShowFPS && s->line1.tex.ID) return;
-	fps = s->accumulator == 0 ? 1 : (int)(s->frames / s->accumulator);
 
-	if (Gfx.ReducedPerfMode || (Gfx.ReducedPerfModeCooldown > 0)) {
-		String_AppendConst(&status, "(low perf mode), ");
-		Gfx.ReducedPerfModeCooldown--;
-	} else if (fps == 0) {
-		/* Running at less than 1 FPS.. */
-		real_fps = s->frames / s->accumulator;
-		String_Format1(&status, "%f1 fps, ", &real_fps);
-	} else {
-		String_Format1(&status, "%i fps, ", &fps);
-	}
-
-	if (Game_ClassicMode) {
-		String_Format1(&status, "%i chunk updates", &Game.ChunkUpdates);
-	} else {
-		if (Game.ChunkUpdates) {
-			String_Format1(&status, "%i chunks/s, ", &Game.ChunkUpdates);
-		}
-
-		indices = ICOUNT(Game_Vertices);
-		String_Format1(&status, "%i vertices", &indices);
-
-		ping = Ping_AveragePingMS();
-		if (ping) String_Format1(&status, ", ping %i ms", &ping);
-	}
-	TextWidget_Set(&s->line1, &status, &s->font);
+	String_InitArray(ver, verBuffer);
+	String_AppendConst(&ver, GAME_APP_VER);
+	TextWidget_Set(&s->line1, &ver, &s->font);
 	s->dirty = true;
+}
+
+static void HUDScreen_RemakeDir(struct HUDScreen* s) {
+	cc_string status; char statusBuffer[STRING_SIZE];
+	float yaw;
+	const char* dirName;
+	/* Compute facing based on player yaw */
+	yaw = Entities.CurPlayer->Base.Yaw;
+	while (yaw < 0.0f) yaw += 360.0f;
+	while (yaw >= 360.0f) yaw -= 360.0f;
+
+	if (yaw >= 315.0f || yaw < 45.0f) dirName = "South";
+	else if (yaw < 135.0f)           dirName = "West";
+	else if (yaw < 225.0f)           dirName = "North";
+	else                              dirName = "East";
+
+	String_InitArray(status, statusBuffer);
+	{
+		cc_string dir = String_FromReadonly(dirName);
+		int yawInt = (int)(yaw + 0.5f);
+		String_Format2(&status, "Facing: %s (%i degrees)", &dir, &yawInt);
+	}
+	TextWidget_Set(&s->lineDir, &status, &s->font);
+}
+
+static void HUDScreen_RemakeServer(struct HUDScreen* s) {
+	cc_string status; char statusBuffer[STRING_SIZE];
+
+	String_InitArray(status, statusBuffer);
+	if (Server.IsSinglePlayer) {
+		String_AppendConst(&status, "Singleplayer");
+	} else if (Server.Name.length) {
+		String_AppendString(&status, &Server.Name);
+	} else if (Server.Address.length) {
+		/* Fallback to address:port */
+		String_AppendString(&status, &Server.Address);
+		if (Server.Port) {
+			String_AppendConst(&status, ":");
+			String_Format1(&status, "%i", &Server.Port);
+		}
+	} else {
+		String_AppendConst(&status, "Connected");
+	}
+
+	TextWidget_Set(&s->lineServer, &status, &s->font);
 }
 
 static void HUDScreen_BuildPosition(struct HUDScreen* s, struct VertexTextured* data) {
@@ -165,28 +187,57 @@ static cc_bool HUDScreen_HasHacksChanged(struct HUDScreen* s) {
 static void HUDScreen_RemakeLine2(struct HUDScreen* s) {
 	cc_string status; char statusBuffer[STRING_SIZE * 2];
 	struct HacksComp* hacks = &Entities.CurPlayer->Hacks;
-	float speed;
+	int indices, ping, fps;
+	float speed, real_fps;
+
 	s->dirty = true;
 
-	if (Game_ClassicMode) {
-		TextWidget_SetConst(&s->line2, Game_Version.Name, &s->font);
-		return;
+	/* Don't remake texture when FPS isn't being shown */
+	if (!Gui.ShowFPS && s->line2.tex.ID) return;
+
+	fps = s->accumulator == 0 ? 1 : (int)(s->frames / s->accumulator);
+
+	String_InitArray(status, statusBuffer);
+	if (Gfx.ReducedPerfMode || (Gfx.ReducedPerfModeCooldown > 0)) {
+		String_AppendConst(&status, "(low perf mode), ");
+		Gfx.ReducedPerfModeCooldown--;
+	} else if (fps == 0) {
+		real_fps = s->frames / s->accumulator;
+		String_Format1(&status, "%f1 fps, ", &real_fps);
+	} else {
+		String_Format1(&status, "%i fps, ", &fps);
 	}
 
+	if (Game_ClassicMode) {
+		String_Format1(&status, "%i chunk updates", &Game.ChunkUpdates);
+	} else {
+		if (Game.ChunkUpdates) {
+			String_Format1(&status, "%i chunks/s, ", &Game.ChunkUpdates);
+		}
+
+		indices = ICOUNT(Game_Vertices);
+		String_Format1(&status, "%i vertices", &indices);
+
+		ping = Ping_AveragePingMS();
+		if (ping) String_Format1(&status, ", ping %i ms", &ping);
+	}
+
+	/* Append hacks/zoom info after status */
 	speed = HacksComp_CalcSpeedFactor(hacks, hacks->CanSpeed);
 	s->lastSpeed = speed; s->lastFov = Camera.Fov;
 	s->hacksChanged = false;
 
-	String_InitArray(status, statusBuffer);
 	if (Camera.Fov != Camera.DefaultFov) {
-		String_Format1(&status, "Zoom fov %i  ", &Camera.Fov);
+		String_Format1(&status, "  Zoom fov %i", &Camera.Fov);
 	}
-
-	if (hacks->Flying) String_AppendConst(&status, "Fly ON   ");
-	if (speed)         String_Format1(&status, "Speed %f1x   ", &speed);
-	if (hacks->Noclip) String_AppendConst(&status, "Noclip ON   ");
+	if (hacks->Flying) String_AppendConst(&status, "  Fly ON");
+	if (speed)         String_Format1(&status, "  Speed %f1x", &speed);
+	if (hacks->Noclip) String_AppendConst(&status, "  Noclip ON");
 
 	TextWidget_Set(&s->line2, &status, &s->font);
+	/* Keep direction and server lines in sync with updates */
+	HUDScreen_RemakeServer(s);
+	HUDScreen_RemakeDir(s);
 }
 
 
@@ -198,6 +249,8 @@ static void HUDScreen_ContextLost(void* screen) {
 	TextAtlas_Free(&s->posAtlas);
 	Elem_Free(&s->hotbar);
 	Elem_Free(&s->line1);
+	Elem_Free(&s->lineServer);
+	Elem_Free(&s->lineDir);
 	Elem_Free(&s->line2);
 }
 
@@ -213,6 +266,8 @@ static void HUDScreen_ContextRecreated(void* screen) {
 	HotbarWidget_SetFont(&s->hotbar, &s->font);
 
 	HUDScreen_RemakeLine1(s);
+	HUDScreen_RemakeServer(s);
+	HUDScreen_RemakeDir(s);
 	TextAtlas_Make(&s->posAtlas, &chars, &s->font, &prefix);
 	HUDScreen_RemakeLine2(s);
 }
@@ -228,13 +283,22 @@ static void HUDScreen_Layout(void* screen) {
 	struct HUDScreen* s = (struct HUDScreen*)screen;
 	struct TextWidget* line1 = &s->line1;
 	struct TextWidget* line2 = &s->line2;
+	struct TextWidget* lineDir = &s->lineDir;
+	struct TextWidget* lineServer = &s->lineServer;
 	int posY;
 
 	Widget_SetLocation(line1, ANCHOR_MIN, ANCHOR_MIN, 
 						2 + DisplayInfo.ContentOffsetX, 2 + DisplayInfo.ContentOffsetY);
 	posY = line1->y + line1->height;
+	/* Place server line, then direction line under version */
+	Widget_SetLocation(lineServer, ANCHOR_MIN, ANCHOR_MIN,
+						2 + DisplayInfo.ContentOffsetX, posY);
+	posY = lineServer->y + lineServer->height;
+	Widget_SetLocation(lineDir, ANCHOR_MIN, ANCHOR_MIN,
+						2 + DisplayInfo.ContentOffsetX, posY);
+	posY = lineDir->y + lineDir->height;
 	s->posAtlas.tex.y = posY;
-	Widget_SetLocation(line2, ANCHOR_MIN, ANCHOR_MIN, 
+	Widget_SetLocation(line2, ANCHOR_MIN, ANCHOR_MIN,
 						2 + DisplayInfo.ContentOffsetX, 0);
 
 	if (Game_ClassicMode) {
@@ -249,6 +313,8 @@ static void HUDScreen_Layout(void* screen) {
 
 	HUDScreen_LayoutHotbar();
 	Widget_Layout(line2);
+	Widget_Layout(lineDir);
+	Widget_Layout(lineServer);
 }
 
 static int HUDScreen_KeyDown(void* screen, int key, struct InputDevice* device) {
@@ -307,9 +373,13 @@ static void HUDScreen_Init(void* screen) {
 
 	HotbarWidget_Create(&s->hotbar);
 	TextWidget_Init(&s->line1);
+	TextWidget_Init(&s->lineServer);
+	TextWidget_Init(&s->lineDir);
 	TextWidget_Init(&s->line2);
 	
 	s->line1.flags  |= WIDGET_FLAG_MAINSCREEN;
+	s->lineServer.flags |= WIDGET_FLAG_MAINSCREEN;
+	s->lineDir.flags |= WIDGET_FLAG_MAINSCREEN;
 	s->line2.flags  |= WIDGET_FLAG_MAINSCREEN;
 
 	Event_Register_(&UserEvents.HacksStateChanged, s, HUDScreen_HacksChanged);
@@ -328,7 +398,7 @@ static void HUDScreen_UpdateFPS(struct HUDScreen* s, float delta) {
 	s->accumulator += delta;
 	if (s->accumulator < 1.0f) return;
 
-	HUDScreen_RemakeLine1(s);
+	HUDScreen_RemakeLine2(s);
 	s->accumulator    = 0.0f;
 	s->frames         = 0;
 	Game.ChunkUpdates = 0;
@@ -377,6 +447,8 @@ static void HUDScreen_BuildMesh(void* screen) {
 
 	HUDScreen_BuildCrosshairsMesh(ptr);
 	Widget_BuildMesh(&s->line1,  ptr);
+	Widget_BuildMesh(&s->lineServer, ptr);
+	Widget_BuildMesh(&s->lineDir, ptr);
 	Widget_BuildMesh(&s->line2,  ptr);
 	Widget_BuildMesh(&s->hotbar, ptr);
 
@@ -393,20 +465,22 @@ static void HUDScreen_Render(void* screen, float delta) {
 
 	Gfx_SetVertexFormat(VERTEX_FORMAT_TEXTURED);
 	Gfx_BindDynamicVb(s->vb);
-	if (Gui.ShowFPS) Widget_Render2(&s->line1, 4);
+	if (Gui.ShowFPS) {
+		int off = 4;
+		off = Widget_Render2(&s->line1, off);
+		off = Widget_Render2(&s->lineServer, off);
+		off = Widget_Render2(&s->lineDir, off);
+		off = Widget_Render2(&s->line2, off);
 
-	if (Game_ClassicMode) {
-		Widget_Render2(&s->line2, 8);
-	} else if (IsOnlyChatActive() && Gui.ShowFPS) {
-		Widget_Render2(&s->line2, 8);
-		Gfx_BindTexture(s->posAtlas.tex.ID);
-		Gfx_DrawVb_IndexedTris_Range(s->posCount, 12 + HOTBAR_MAX_VERTICES, DRAW_HINT_RECT);
-		/* TODO swap these two lines back */
+		if (!Game_ClassicMode && IsOnlyChatActive()) {
+			Gfx_BindTexture(s->posAtlas.tex.ID);
+			Gfx_DrawVb_IndexedTris_Range(s->posCount, off + HOTBAR_MAX_VERTICES, DRAW_HINT_RECT);
+		}
 	}
 
 	if (!Gui_GetBlocksWorld()) {
 		Gfx_BindDynamicVb(s->vb);
-		if (!Gui.HideHotbar) Widget_Render2(&s->hotbar, 12);
+		if (!Gui.HideHotbar) Widget_Render2(&s->hotbar, 20);
 
 		if (!Gui.HideCrosshair && Gui.IconsTex && !tablist_active) {
 			Gfx_BindTexture(Gui.IconsTex);
