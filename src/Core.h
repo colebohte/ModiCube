@@ -725,7 +725,7 @@ typedef cc_uint8 TextureLoc;
 #endif
 
 typedef cc_uint8 BlockRaw;
-typedef cc_uint8 EntityID;
+typedef cc_uint16 EntityID;
 typedef cc_uint8 Face;
 typedef cc_uint32 cc_result;
 typedef cc_uint64 TimeMS;

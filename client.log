@@ -1,0 +1,82 @@
+
+----------------------------------------
+Crash time: 12/09/2026 23:26:10
+ClassiCube crashed.
+Reason: Failed to open the X11 display. No X server running?
+-- backtrace --
+-- memory map --
+561488d51000-561488d84000 r--p 00000000 103:07 8651639                   /home/coleb/Documents/ModiCube/ClassiCube
+561488d84000-561488e5c000 r-xp 00033000 103:07 8651639                   /home/coleb/Documents/ModiCube/ClassiCube
+561488e5c000-561488ebd000 r--p 0010b000 103:07 8651639                   /home/coleb/Documents/ModiCube/ClassiCube
+561488ebd000-561488ec5000 r--p 0016c000 103:07 8651639                   /home/coleb/Documents/ModiCube/ClassiCube
+561488ec5000-561488ec9000 rw-p 00174000 103:07 8651639                   /home/coleb/Documents/ModiCube/ClassiCube
+561488ec9000-5614890ea000 rw-p 00000000 00:00 0 
+56148ab9e000-56148abbf000 rw-p 00000000 00:00 0                          [heap]
+7efcb1a55000-7efcb1a59000 rw-p 00000000 00:00 0 
+7efcb1a59000-7efcb1a5a000 r--p 00000000 103:07 1356570                   /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0
+7efcb1a5a000-7efcb1a5c000 r-xp 00001000 103:07 1356570                   /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0
+7efcb1a5c000-7efcb1a5d000 r--p 00003000 103:07 1356570                   /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0
+7efcb1a5d000-7efcb1a5e000 r--p 00003000 103:07 1356570                   /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0
+7efcb1a5e000-7efcb1a5f000 rw-p 00004000 103:07 1356570                   /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0
+7efcb1a5f000-7efcb1a62000 r--p 00000000 103:07 1356295                   /usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0
+7efcb1a62000-7efcb1a7d000 r-xp 00003000 103:07 1356295                   /usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0
+7efcb1a7d000-7efcb1a80000 r--p 0001e000 103:07 1356295                   /usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0
+7efcb1a80000-7efcb1a81000 r--p 00021000 103:07 1356295                   /usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0
+7efcb1a81000-7efcb1a82000 rw-p 00022000 103:07 1356295                   /usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0
+7efcb1a82000-7efcb1a92000 rw-p 00000000 00:00 0 
+7efcb1a92000-7efcb1ad3000 r--p 00000000 103:07 1344796                   /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0
+7efcb1ad3000-7efcb1b12000 r-xp 00041000 103:07 1344796                   /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0
+7efcb1b12000-7efcb1b25000 r--p 00080000 103:07 1344796                   /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0
+7efcb1b25000-7efcb1b41000 r--p 00093000 103:07 1344796                   /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0
+7efcb1b41000-7efcb1b42000 rw-p 000af000 103:07 1344796                   /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0
+7efcb1b42000-7efcb1b4a000 rw-p 00000000 00:00 0 
+7efcb1b4a000-7efcb1b4e000 r--p 00000000 103:07 1343983                   /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0
+7efcb1b4e000-7efcb1b59000 r-xp 00004000 103:07 1343983                   /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0
+7efcb1b59000-7efcb1b5c000 r--p 0000f000 103:07 1343983                   /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0
+7efcb1b5c000-7efcb1b5d000 r--p 00011000 103:07 1343983                   /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0
+7efcb1b5d000-7efcb1b5e000 rw-p 00012000 103:07 1343983                   /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0
+7efcb1b5e000-7efcb1b60000 rw-p 00000000 00:00 0 
+7efcb1b60000-7efcb1b6d000 r--p 00000000 103:07 1356530                   /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0
+7efcb1b6d000-7efcb1b81000 r-xp 0000d000 103:07 1356530                   /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0
+7efcb1b81000-7efcb1b8a000 r--p 00021000 103:07 1356530                   /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0
+7efcb1b8a000-7efcb1b8b000 r--p 0002a000 103:07 1356530                   /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0
+7efcb1b8b000-7efcb1b8c000 rw-p 0002b000 103:07 1356530                   /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0
+7efcb1b8c000-7efcb1bb4000 r--p 00000000 103:07 921529                    /usr/lib/x86_64-linux-gnu/libc.so.6
+7efcb1bb4000-7efcb1d29000 r-xp 00028000 103:07 921529                    /usr/lib/x86_64-linux-gnu/libc.so.6
+7efcb1d29000-7efcb1d78000 r--p 0019d000 103:07 921529                    /usr/lib/x86_64-linux-gnu/libc.so.6
+7efcb1d78000-7efcb1d7c000 r--p 001eb000 103:07 921529                    /usr/lib/x86_64-linux-gnu/libc.so.6
+7efcb1d7c000-7efcb1d7e000 rw-p 001ef000 103:07 921529                    /usr/lib/x86_64-linux-gnu/libc.so.6
+7efcb1d7e000-7efcb1d8b000 rw-p 00000000 00:00 0 
+7efcb1d8b000-7efcb1d9d000 r--p 00000000 103:07 1344712                   /usr/lib/x86_64-linux-gnu/libm.so.6
+7efcb1d9d000-7efcb1e26000 r-xp 00012000 103:07 1344712                   /usr/lib/x86_64-linux-gnu/libm.so.6
+7efcb1e26000-7efcb1e88000 r--p 0009b000 103:07 1344712                   /usr/lib/x86_64-linux-gnu/libm.so.6
+7efcb1e88000-7efcb1e89000 r--p 000fc000 103:07 1344712                   /usr/lib/x86_64-linux-gnu/libm.so.6
+7efcb1e89000-7efcb1e8a000 rw-p 000fd000 103:07 1344712                   /usr/lib/x86_64-linux-gnu/libm.so.6
+7efcb1e8a000-7efcb1ed3000 r--p 00000000 103:07 1357307                   /usr/lib/x86_64-linux-gnu/libGL.so.1.7.0
+7efcb1ed3000-7efcb1ef2000 r-xp 00049000 103:07 1357307                   /usr/lib/x86_64-linux-gnu/libGL.so.1.7.0
+7efcb1ef2000-7efcb1f06000 r--p 00068000 103:07 1357307                   /usr/lib/x86_64-linux-gnu/libGL.so.1.7.0
+7efcb1f06000-7efcb1f14000 r--p 0007c000 103:07 1357307                   /usr/lib/x86_64-linux-gnu/libGL.so.1.7.0
+7efcb1f14000-7efcb1f15000 rw-p 0008a000 103:07 1357307                   /usr/lib/x86_64-linux-gnu/libGL.so.1.7.0
+7efcb1f15000-7efcb1f16000 rw-p 00000000 00:00 0 
+7efcb1f16000-7efcb1f19000 r--p 00000000 103:07 1343607                   /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0
+7efcb1f19000-7efcb1f26000 r-xp 00003000 103:07 1343607                   /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0
+7efcb1f26000-7efcb1f28000 r--p 00010000 103:07 1343607                   /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0
+7efcb1f28000-7efcb1f29000 r--p 00012000 103:07 1343607                   /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0
+7efcb1f29000-7efcb1f2a000 rw-p 00013000 103:07 1343607                   /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0
+7efcb1f2a000-7efcb1f48000 r--p 00000000 103:07 1356566                   /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0
+7efcb1f48000-7efcb1fe1000 r-xp 0001e000 103:07 1356566                   /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0
+7efcb1fe1000-7efcb2070000 r--p 000b7000 103:07 1356566                   /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0
+7efcb2070000-7efcb2073000 r--p 00146000 103:07 1356566                   /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0
+7efcb2073000-7efcb2077000 rw-p 00149000 103:07 1356566                   /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0
+7efcb2077000-7efcb2079000 rw-p 00000000 00:00 0 
+7efcb208e000-7efcb2092000 r--p 00000000 00:00 0                          [vvar]
+7efcb2092000-7efcb2094000 r--p 00000000 00:00 0                          [vvar_vclock]
+7efcb2094000-7efcb2096000 r-xp 00000000 00:00 0                          [vdso]
+7efcb2096000-7efcb2097000 r--p 00000000 103:07 921154                    /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7efcb2097000-7efcb20c1000 r-xp 00001000 103:07 921154                    /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7efcb20c1000-7efcb20cc000 r--p 0002b000 103:07 921154                    /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7efcb20cc000-7efcb20ce000 r--p 00036000 103:07 921154                    /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7efcb20ce000-7efcb20cf000 rw-p 00038000 103:07 921154                    /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7efcb20cf000-7efcb20d0000 rw-p 00000000 00:00 0 
+7ffc579dc000-7ffc579fe000 rw-p 00000000 00:00 0                          [stack]
+ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0                  [vsyscall]

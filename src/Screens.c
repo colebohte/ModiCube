@@ -111,10 +111,10 @@ static void HUDScreen_RemakeDir(struct HUDScreen* s) {
 	while (yaw < 0.0f) yaw += 360.0f;
 	while (yaw >= 360.0f) yaw -= 360.0f;
 
-	if (yaw >= 315.0f || yaw < 45.0f) dirName = "South";
-	else if (yaw < 135.0f)           dirName = "West";
-	else if (yaw < 225.0f)           dirName = "North";
-	else                              dirName = "East";
+	if (yaw >= 315.0f || yaw < 45.0f) dirName = "North";
+	else if (yaw < 135.0f)           dirName = "East";
+	else if (yaw < 225.0f)           dirName = "South";
+	else                              dirName = "West";
 
 	String_InitArray(status, statusBuffer);
 	{
