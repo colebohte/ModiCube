@@ -6,16 +6,16 @@ Copyright 2014-2025 ClassiCube | Licensed under BSD-3
 */
 
 #define GAME_MAX_CMDARGS 5
-#define GAME_APP_VER "modicube-1.0.0.rc1"
+#define GAME_APP_VER "modicube-1.0.0.rc2"
 #define GAME_API_VER 1
 
 #if defined CC_BUILD_WEB
-#define GAME_APP_ALT   "ClassiCube modicube-1.0.0.rc1 web mobile"
-#define GAME_APP_NAME  "ClassiCube modicube-1.0.0.rc1 web"
+#define GAME_APP_ALT   "ClassiCube modicube-1.0.0.rc2 web mobile"
+#define GAME_APP_NAME  "ClassiCube modicube-1.0.0.rc2 web"
 #define GAME_APP_TITLE "ModiCube"
 #else
-#define GAME_APP_NAME  "ClassiCube modicube-1.0.0.rc1"
-#define GAME_APP_TITLE "ClassiCube modicube-1.0.0.rc1"
+#define GAME_APP_NAME  "ClassiCube modicube-1.0.0.rc2"
+#define GAME_APP_TITLE "ClassiCube modicube-1.0.0.rc2"
 #endif
 
 /* Max number of characters strings can have. */
