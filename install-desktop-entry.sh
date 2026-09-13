@@ -1,4 +1,4 @@
-DESKTOP_FILE=ClassiCube.desktop
+DESKTOP_FILE=ModiCube.desktop
 GAME_DIR=`pwd`
 
 # remove existing ClassiCube desktop entry file
@@ -13,13 +13,13 @@ else
   wget "https://raw.githubusercontent.com/ClassiCube/classicube/master/misc/CCicon.png"
 fi
 
-# create ClassiCube desktop entry
-echo 'Creating ClassiCube.desktop..'
+# create ModiCube desktop entry
+echo 'Creating ModiCube.desktop..'
 cat >> $DESKTOP_FILE << EOF
 [Desktop Entry]
 Type=Application
 Comment=Minecraft Classic inspired sandbox game
-Name=ClassiCube
+Name=ModiCube
 Exec=$GAME_DIR/ClassiCube
 Icon=$GAME_DIR/CCicon.png
 Path=$GAME_DIR
@@ -29,15 +29,15 @@ Actions=singleplayer;resume;
 
 [Desktop Action singleplayer]
 Name=Start singleplayer
-Exec=$GAME_DIR/ClassiCube --singleplayer
+Exec=$GAME_DIR/ModiCube --singleplayer
 
 [Desktop Action resume]
 Name=Resume last server
-Exec=$GAME_DIR/ClassiCube --resume
+Exec=$GAME_DIR/ModiCube --resume
 EOF
 chmod +x $DESKTOP_FILE
 
-echo 'Installing ClassiCube.desktop..'
-# install ClassiCube desktop entry into the system
-sudo desktop-file-install --dir=/usr/share/applications ClassiCube.desktop
+echo 'Installing ModiCube.desktop..'
+# install ModiCube desktop entry into the system
+sudo desktop-file-install --dir=/usr/share/applications ModiCube.desktop
 sudo update-desktop-database /usr/share/applications
