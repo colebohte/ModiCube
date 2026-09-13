@@ -12,7 +12,7 @@ CFLAGS  = -pipe -fno-math-errno -Werror -Wno-error=missing-braces -Wno-error=str
 # Flags passed to the linker
 LDFLAGS = -g -rdynamic
 # Name of the main executable
-ENAME   = ClassiCube
+ENAME   = ModiCube
 # Name of the final target file
 # (usually this is the executable, but e.g. is the app bundle on macOS)
 TARGET  := $(ENAME)
@@ -335,7 +335,7 @@ clean:
 $(BUILD_DIRS):
 	mkdir -p $@
 
-# Main executable (typically just 'ClassiCube' or 'ClassiCube.exe')
+# Main executable (typically just 'ClassiCube' or 'ClassiCube.exe' or in the case of ModiCube, 'ModiCube' or 'ModiCube.exe')
 $(ENAME): $(BUILD_DIRS) $(OBJECTS)
 	$(LINK) $(LDFLAGS) -o $@$(OEXT) $(OBJECTS) $(EXTRA_LIBS) $(LIBS)
 	@echo "----------------------------------------------------"
