@@ -97,7 +97,9 @@ static void HUDScreen_RemakeLine1(struct HUDScreen* s) {
 	if (!Gui.ShowFPS && s->line1.tex.ID) return;
 
 	String_InitArray(ver, verBuffer);
-	String_AppendConst(&ver, GAME_APP_VER);
+	if (Gui.ShowGameVersion) {
+		String_AppendConst(&ver, GAME_APP_VER);
+	}
 	TextWidget_Set(&s->line1, &ver, &s->font);
 	s->dirty = true;
 }
@@ -106,21 +108,24 @@ static void HUDScreen_RemakeDir(struct HUDScreen* s) {
 	cc_string status; char statusBuffer[STRING_SIZE];
 	float yaw;
 	const char* dirName;
-	/* Compute facing based on player yaw */
-	yaw = Entities.CurPlayer->Base.Yaw;
-	while (yaw < 0.0f) yaw += 360.0f;
-	while (yaw >= 360.0f) yaw -= 360.0f;
-
-	if (yaw >= 315.0f || yaw < 45.0f) dirName = "North";
-	else if (yaw < 135.0f)           dirName = "East";
-	else if (yaw < 225.0f)           dirName = "South";
-	else                              dirName = "West";
 
 	String_InitArray(status, statusBuffer);
-	{
-		cc_string dir = String_FromReadonly(dirName);
-		int yawInt = (int)(yaw + 0.5f);
-		String_Format2(&status, "Facing: %s (%i degrees)", &dir, &yawInt);
+	if (Gui.ShowCompass) {
+		/* Compute facing based on player yaw */
+		yaw = Entities.CurPlayer->Base.Yaw;
+		while (yaw < 0.0f) yaw += 360.0f;
+		while (yaw >= 360.0f) yaw -= 360.0f;
+
+		if (yaw >= 315.0f || yaw < 45.0f) dirName = "North";
+		else if (yaw < 135.0f)           dirName = "East";
+		else if (yaw < 225.0f)           dirName = "South";
+		else                              dirName = "West";
+
+		{
+			cc_string dir = String_FromReadonly(dirName);
+			int yawInt = (int)(yaw + 0.5f);
+			String_Format2(&status, "Facing: %s (%i degrees)", &dir, &yawInt);
+		}
 	}
 	TextWidget_Set(&s->lineDir, &status, &s->font);
 }
@@ -129,19 +134,21 @@ static void HUDScreen_RemakeServer(struct HUDScreen* s) {
 	cc_string status; char statusBuffer[STRING_SIZE];
 
 	String_InitArray(status, statusBuffer);
-	if (Server.IsSinglePlayer) {
-		String_AppendConst(&status, "Singleplayer");
-	} else if (Server.Name.length) {
-		String_AppendString(&status, &Server.Name);
-	} else if (Server.Address.length) {
-		/* Fallback to address:port */
-		String_AppendString(&status, &Server.Address);
-		if (Server.Port) {
-			String_AppendConst(&status, ":");
-			String_Format1(&status, "%i", &Server.Port);
+	if (Gui.ShowServerName) {
+		if (Server.IsSinglePlayer) {
+			String_AppendConst(&status, "Singleplayer");
+		} else if (Server.Name.length) {
+			String_AppendString(&status, &Server.Name);
+		} else if (Server.Address.length) {
+			/* Fallback to address:port */
+			String_AppendString(&status, &Server.Address);
+			if (Server.Port) {
+				String_AppendConst(&status, ":");
+				String_Format1(&status, "%i", &Server.Port);
+			}
+		} else {
+			String_AppendConst(&status, "Connected");
 		}
-	} else {
-		String_AppendConst(&status, "Connected");
 	}
 
 	TextWidget_Set(&s->lineServer, &status, &s->font);
@@ -287,16 +294,26 @@ static void HUDScreen_Layout(void* screen) {
 	struct TextWidget* lineServer = &s->lineServer;
 	int posY;
 
+	posY = 2 + DisplayInfo.ContentOffsetY;
 	Widget_SetLocation(line1, ANCHOR_MIN, ANCHOR_MIN, 
-						2 + DisplayInfo.ContentOffsetX, 2 + DisplayInfo.ContentOffsetY);
-	posY = line1->y + line1->height;
+						2 + DisplayInfo.ContentOffsetX, posY);
+	if (Gui.ShowGameVersion && line1->height) {
+		posY += line1->height;
+	}
+
 	/* Place server line, then direction line under version */
 	Widget_SetLocation(lineServer, ANCHOR_MIN, ANCHOR_MIN,
 						2 + DisplayInfo.ContentOffsetX, posY);
-	posY = lineServer->y + lineServer->height;
+	if (Gui.ShowServerName && lineServer->height) {
+		posY += lineServer->height;
+	}
+
 	Widget_SetLocation(lineDir, ANCHOR_MIN, ANCHOR_MIN,
 						2 + DisplayInfo.ContentOffsetX, posY);
-	posY = lineDir->y + lineDir->height;
+	if (Gui.ShowCompass && lineDir->height) {
+		posY += lineDir->height;
+	}
+
 	s->posAtlas.tex.y = posY;
 	Widget_SetLocation(line2, ANCHOR_MIN, ANCHOR_MIN,
 						2 + DisplayInfo.ContentOffsetX, 0);

@@ -265,6 +265,7 @@ static void WoM_CheckMotd(void) {
 	cc_string motd, host;
 	int index;	
 
+	if (!Gui.ShowMOTD) return;
 	motd = Server.MOTD;
 	if (!motd.length) return;
 	index = String_IndexOfConst(&motd, "cfg=");
@@ -519,13 +520,18 @@ static void Classic_Handshake(cc_uint8* data) {
 
 	ReadString(&data, &Server.Name);
 	ReadString(&data, &Server.MOTD);
+	if (!Gui.ShowMOTD) {
+		Server.MOTD.length = 0;
+	}
 	Chat_SetLogName(&Server.Name);
 
 	hacks = &Entities.CurPlayer->Hacks;
 	UpdateUserType(hacks, *data);
 	
-	String_Copy(&hacks->HacksFlags,         &Server.Name);
-	String_AppendString(&hacks->HacksFlags, &Server.MOTD);
+	String_Copy(&hacks->HacksFlags, &Server.Name);
+	if (Gui.ShowMOTD) {
+		String_AppendString(&hacks->HacksFlags, &Server.MOTD);
+	}
 	HacksComp_RecheckFlags(hacks);
 }
 
@@ -1266,6 +1272,16 @@ static void CPE_HackControl(cc_uint8* data) {
 	p->Hacks.CanSpeed          = data[2] != 0;
 	p->Hacks.CanRespawn        = data[3] != 0;
 	p->Hacks.CanUseThirdPerson = data[4] != 0;
+
+	if (Gui.ShowMOTD) {
+		p->Hacks.CanFly            = true;
+		p->Hacks.CanNoclip         = true;
+		p->Hacks.CanSpeed          = true;
+		p->Hacks.CanRespawn        = true;
+		p->Hacks.CanUseThirdPerson = true;
+		p->Hacks.CanAnyHacks       = true;
+	}
+
 	HacksComp_Update(&p->Hacks);
 	jumpHeight = Stream_GetU16_BE(data + 5);
 

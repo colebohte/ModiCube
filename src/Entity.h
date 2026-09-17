@@ -23,12 +23,12 @@ extern struct IGameComponent Entities_Component;
 #else
 #define MAX_LOCAL_PLAYERS 1
 #endif
-#define MAX_NET_PLAYERS   512
+#define MAX_NET_PLAYERS   255
 
 /* Offset used to avoid floating point roundoff errors. */
 #define ENTITY_ADJUSTMENT 0.001f
 #define ENTITIES_MAX_COUNT (MAX_NET_PLAYERS + MAX_LOCAL_PLAYERS)
-#define ENTITIES_SELF_ID 65535
+#define ENTITIES_SELF_ID 255
 
 enum NameMode {
 	NAME_MODE_NONE, NAME_MODE_HOVERED, NAME_MODE_ALL, NAME_MODE_ALL_HOVERED, NAME_MODE_ALL_UNSCALED, NAME_MODE_COUNT

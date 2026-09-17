@@ -220,6 +220,7 @@ static void Menu_SwitchBindsHotbar(void* a, void* b)       { HotbarBindingsScree
 static void SwitchBindsMain(void* s, void* w);
 
 static void Menu_SwitchMisc(void* a, void* b)      { MiscOptionsScreen_Show(); }
+static void Menu_SwitchModiCube(void* a, void* b)  { ModiCubeOptionsScreen_Show(); }
 static void Menu_SwitchChat(void* a, void* b)      { ChatOptionsScreen_Show(); }
 static void Menu_SwitchGui(void* a, void* b)       { GuiOptionsScreen_Show(); }
 static void Menu_SwitchGfx(void* a, void* b)       { GraphicsOptionsScreen_Show(); }
@@ -658,36 +659,38 @@ void ClassicPauseScreen_Show(void) {
 static struct OptionsGroupScreen {
 	Screen_Body
 	struct FontDesc textFont;
-	struct ButtonWidget btns[8];
+	struct ButtonWidget btns[9];
 	struct TextWidget desc;
 	struct ButtonWidget done;
-	struct Widget* __widgets[8 + 2];
+	struct Widget* __widgets[9 + 2];
 } OptionsGroupScreen;
 
-static const char* const optsGroup_descs[8] = {
+static const char* const optsGroup_descs[9] = {
 	"&eMusic/Sound, view bobbing, and more",
 	"&eGui scale, font settings, and more",
 	"&eFPS limit, view distance, entity names/shadows",
 	"&eSet key and mouse bindings",
+	"&eCompass, Server Name, Game Version, MOTD",
 	"&eChat options",
 	"&eHacks allowed, jump settings, and more",
 	"&eEnv colours, water level, weather, and more",
 	"&eSettings for resembling the original classic",
 };
-static const struct SimpleButtonDesc optsGroup_btns[8] = {
-	{ -160, -100, "Misc options...",      Menu_SwitchMisc        },
-	{ -160,  -50, "Gui options...",       Menu_SwitchGui         },
-	{ -160,    0, "Graphics options...",  Menu_SwitchGfx         },
-	{ -160,   50, "Controls...",          SwitchBindsMain        },
-	{  160, -100, "Chat options...",      Menu_SwitchChat        },
-	{  160,  -50, "Hacks settings...",    Menu_SwitchHacks       },
-	{  160,    0, "Env settings...",      Menu_SwitchEnv         },
-	{  160,   50, "Nostalgia options...", Menu_SwitchNostalgia   }
+static const struct SimpleButtonDesc optsGroup_btns[9] = {
+	{ -160, -120, "Misc options...",      Menu_SwitchMisc        },
+	{ -160,  -70, "Gui options...",       Menu_SwitchGui         },
+	{ -160,  -20, "Graphics options...",  Menu_SwitchGfx         },
+	{ -160,   30, "Controls...",          SwitchBindsMain        },
+	{ -160,   80, "ModiCube options...",  Menu_SwitchModiCube    },
+	{  160, -120, "Chat options...",      Menu_SwitchChat        },
+	{  160,  -70, "Hacks settings...",    Menu_SwitchHacks       },
+	{  160,  -20, "Env settings...",      Menu_SwitchEnv         },
+	{  160,   30, "Nostalgia options...", Menu_SwitchNostalgia   }
 };
 
 static void OptionsGroupScreen_CheckHacksAllowed(void* screen) {
 	struct OptionsGroupScreen* s = (struct OptionsGroupScreen*)screen;
-	Widget_SetDisabled(&s->btns[6],
+	Widget_SetDisabled(&s->btns[7],
 			!Entities.CurPlayer->Hacks.CanAnyHacks); /* env settings */
 	s->dirty = true;
 }
@@ -710,7 +713,7 @@ static void OptionsGroupScreen_ContextRecreated(void* screen) {
 	Gui_MakeTitleFont(&titleFont);
 	Gui_MakeBodyFont(&s->textFont);
 
-	Menu_SetButtons(s->btns, &titleFont, optsGroup_btns, 8);
+	Menu_SetButtons(s->btns, &titleFont, optsGroup_btns, 9);
 	ButtonWidget_SetConst(&s->done, "Done", &titleFont);
 
 	if (s->selectedI >= 0) OptionsGroupScreen_UpdateDesc(s);
@@ -720,8 +723,8 @@ static void OptionsGroupScreen_ContextRecreated(void* screen) {
 
 static void OptionsGroupScreen_Layout(void* screen) {
 	struct OptionsGroupScreen* s = (struct OptionsGroupScreen*)screen;
-	Menu_LayoutButtons(s->btns, optsGroup_btns, 8);
-	Widget_SetLocation(&s->desc, ANCHOR_CENTRE, ANCHOR_CENTRE, 0, 100);
+	Menu_LayoutButtons(s->btns, optsGroup_btns, 9);
+	Widget_SetLocation(&s->desc, ANCHOR_CENTRE, ANCHOR_CENTRE, 0, 130);
 	Menu_LayoutBack(&s->done);
 }
 
@@ -733,9 +736,9 @@ static void OptionsGroupScreen_Init(void* screen) {
 	s->numWidgets  = 0;
 	s->maxWidgets  = Array_Elems(s->__widgets);
 	s->selectedI   = -1;
-	s->widgetsPerPage = 4;
+	s->widgetsPerPage = 5;
 
-	Menu_AddButtons(s,  s->btns, 300, optsGroup_btns, 8);
+	Menu_AddButtons(s,  s->btns, 300, optsGroup_btns, 9);
 	TextWidget_Add(s,   &s->desc);
 	AddPrimaryButton(s, &s->done, Menu_SwitchPause);
 

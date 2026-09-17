@@ -51,6 +51,7 @@ void FontListScreen_Show(void);
 void HotkeyListScreen_Show(void);
 
 void MiscOptionsScreen_Show(void);
+void ModiCubeOptionsScreen_Show(void);
 void ChatOptionsScreen_Show(void);
 void GuiOptionsScreen_Show(void);
 void GraphicsOptionsScreen_Show(void);

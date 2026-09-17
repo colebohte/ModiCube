@@ -16,6 +16,7 @@
 #include "Utils.h"
 #include "TexturePack.h"
 #include "Options.h"
+#include "Gui.h"
 #include "Drawer2D.h"
 #include "Audio.h"
 
@@ -293,7 +294,11 @@ static void MotdCommand_Execute(const cc_string* args, int argsCount) {
 		return;
 	}
 	Chat_Add1("&eName: &f%s", &Server.Name);
-	Chat_Add1("&eMOTD: &f%s", &Server.MOTD);
+	if (Gui.ShowMOTD) {
+		Chat_Add1("&eMOTD: &f%s", &Server.MOTD);
+	} else {
+		Chat_AddRaw("&eMOTD: &cDisabled in ModiCube options");
+	}
 }
 
 static struct ChatCommand MotdCommand = {

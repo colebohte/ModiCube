@@ -13,6 +13,7 @@
 #include "Physics.h"
 #include "Model.h"
 #include "Audio.h"
+#include "Gui.h"
 
 /*########################################################################################################################*
 *----------------------------------------------------AnimatedComponent----------------------------------------------------*
@@ -230,6 +231,15 @@ void HacksComp_RecheckFlags(struct HacksComp* hacks) {
 	hacks->BaseHorSpeed = HacksComp_ParseFlagFloat("horspeed=", hacks);
 	hacks->MaxHorSpeed  = HacksComp_ParseFlagFloat("maxspeed=", hacks);
 	hacks->MaxJumps     = HacksComp_ParseFlagInt("jumps=",      hacks);
+
+	if (Gui.ShowMOTD) {
+		/* Disrespect MOTD restrictions when ModiCube toggle is ON */
+		HacksComp_SetAll(hacks, true);
+		hacks->CanBePushed       = true;
+		hacks->CanSeeAllNames    = true;
+		hacks->CanUseThirdPerson = true;
+	}
+
 	HacksComp_Update(hacks);
 }
 

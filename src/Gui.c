@@ -124,6 +124,10 @@ static void LoadOptions(void) {
 	Gui.ClassicChat      = Options_GetBool(OPT_CLASSIC_CHAT,      false) || Game_PureClassic;
 	Gui.ClassicInventory = Options_GetBool(OPT_CLASSIC_INVENTORY, false) || Game_ClassicMode;
 	Gui.ShowFPS          = Options_GetBool(OPT_SHOW_FPS, true);
+	Gui.ShowCompass      = Options_GetBool(OPT_SHOW_COMPASS, true);
+	Gui.ShowServerName   = Options_GetBool(OPT_SHOW_SERVER_NAME, true);
+	Gui.ShowGameVersion  = Options_GetBool(OPT_SHOW_GAME_VER, true);
+	Gui.ShowMOTD         = Options_GetBool(OPT_SHOW_MOTD, true);
 	
 	Gui.RawInventoryScale = Options_GetFloat(OPT_INVENTORY_SCALE, 0.25f, 5.0f, 1.0f);
 #if defined CC_BUILD_SYMBIAN_3 || defined CC_BUILD_SYMBIAN_S60V5

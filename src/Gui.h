@@ -46,6 +46,8 @@ CC_VAR extern struct _GuiData {
 	cc_bool TabAutocomplete;
 	/* Whether FPS counter (and other info) is shown in top left. */
 	cc_bool ShowFPS;
+	/* Whether compass, server name, game version are shown in F3 menu, and whether server MOTD support is enabled */
+	cc_bool ShowCompass, ShowServerName, ShowGameVersion, ShowMOTD;
 	/* Whether classic-style inventory is used */
 	cc_bool ClassicInventory;
 	float RawHotbarScale, RawChatScale, RawInventoryScale, RawCrosshairScale;
