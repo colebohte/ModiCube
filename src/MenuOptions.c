@@ -1480,6 +1480,24 @@ static void MCO_SetMOTD(cc_bool v) {
   }
 }
 
+static void MCO_OnMOTDAccepted(void) {
+  MCO_SetMOTD(true);
+  MenuOptionsScreen_Instance.dirty = true;
+}
+
+static void MCO_MOTDClick(void *screen, void *widget) {
+  struct MenuOptionsScreen *s = (struct MenuOptionsScreen *)screen;
+  struct ButtonWidget *btn = (struct ButtonWidget *)widget;
+
+  if (!Gui.ShowMOTD) {
+    Gui_Remove((struct Screen *)s);
+    MOTDDisclaimerOverlay_Show(MCO_OnMOTDAccepted);
+  } else {
+    MCO_SetMOTD(false);
+    MenuOptionsScreen_Update(s, btn);
+  }
+}
+
 static void ModiCubeOptionsScreen_InitWidgets(struct MenuOptionsScreen *s) {
   MenuOptionsScreen_BeginButtons(s);
   {
@@ -1490,8 +1508,18 @@ static void ModiCubeOptionsScreen_InitWidgets(struct MenuOptionsScreen *s) {
                               "&eShow server name in F3 menu");
     MenuOptionsScreen_AddBool(s, "Show game version", MCO_GetGameVer,
                               MCO_SetGameVer, "&eShow game version in F3 menu");
-    MenuOptionsScreen_AddBool(s, "Disable server MOTD", MCO_GetMOTD,
-                              MCO_SetMOTD, "&eDisable server MOTD");
+    
+    int i = MenuOptionsScreen_AddButton(
+        s, "Disable server MOTD", MCO_MOTDClick, MenuOptionsScreen_BoolGet,
+        NULL,
+        "&eEnable/Disable support for server MOTD\n"
+        "\n"
+        "&4DISCLAIMER&f: Use of this option is &eHIGHLY DISCOURAGED&f as it "
+        "allows for the cheating of some maps in some servers, most likely "
+        "resulting in a ban.");
+    struct MenuOptionMetaBool *meta = &menuOpts_meta[i].b;
+    meta->GetValue = MCO_GetMOTD;
+    meta->SetValue = MCO_SetMOTD;
   }
   MenuOptionsScreen_EndButtons(s, -1, Menu_SwitchOptions);
 }

@@ -2738,6 +2738,168 @@ void UrlWarningOverlay_Show(const cc_string* url) {
 
 
 /*########################################################################################################################*
+*-----------------------------------------------MOTDDisclaimerOverlay-----------------------------------------------------*
+*#########################################################################################################################*/
+static struct MOTDDisclaimerOverlay {
+	Screen_Body
+	struct TextWidget lbls[4];
+	struct ButtonWidget btns[2];
+	struct Widget* __widgets[4 + 2];
+	void (*onAccepted)(void);
+} MOTDDisclaimerOverlay;
+
+static void MOTDDisclaimerOverlay_YesClick(void* screen, void* b) {
+	struct MOTDDisclaimerOverlay* s = (struct MOTDDisclaimerOverlay*)screen;
+	void (*onAccepted)(void) = s->onAccepted;
+	Gui_Remove((struct Screen*)s);
+	MOTDFoxingtonWarningOverlay_Show(onAccepted);
+}
+
+static void MOTDDisclaimerOverlay_NoClick(void* screen, void* b) {
+	struct MOTDDisclaimerOverlay* s = (struct MOTDDisclaimerOverlay*)screen;
+	Gui_Remove((struct Screen*)s);
+}
+
+static void MOTDDisclaimerOverlay_ContextRecreated(void* screen) {
+	struct MOTDDisclaimerOverlay* s = (struct MOTDDisclaimerOverlay*)screen;
+	struct FontDesc titleFont, textFont;
+	Screen_UpdateVb(screen);
+
+	Gui_MakeTitleFont(&titleFont);
+	Gui_MakeBodyFont(&textFont);
+
+	TextWidget_SetConst(&s->lbls[0], "&4DISCLAIMER&f: &cHIGH RISK OPTION", &titleFont);
+	TextWidget_SetConst(&s->lbls[1], "Use of this option is &eHIGHLY DISCOURAGED&f as it allows for the", &textFont);
+	TextWidget_SetConst(&s->lbls[2], "cheating of some maps in some servers, most likely &cresulting in a ban.&f", &textFont);
+	TextWidget_SetConst(&s->lbls[3], "&eDo you accept the risks and want to enable this feature?", &textFont);
+
+	ButtonWidget_SetConst(&s->btns[0], "Yes", &titleFont);
+	ButtonWidget_SetConst(&s->btns[1], "No",  &titleFont);
+	Font_Free(&titleFont);
+	Font_Free(&textFont);
+}
+
+static void MOTDDisclaimerOverlay_Layout(void* screen) {
+	struct MOTDDisclaimerOverlay* s = (struct MOTDDisclaimerOverlay*)screen;
+	Overlay_LayoutLabels(s->lbls);
+	Overlay_LayoutMainButtons(s->btns);
+}
+
+static void MOTDDisclaimerOverlay_Init(void* screen) {
+	struct MOTDDisclaimerOverlay* s = (struct MOTDDisclaimerOverlay*)screen;
+	s->widgets     = s->__widgets;
+	s->numWidgets  = 0;
+	s->maxWidgets  = Array_Elems(s->__widgets);
+
+	Overlay_AddLabels(s, s->lbls);
+	ButtonWidget_Add(s, &s->btns[0], 160, MOTDDisclaimerOverlay_YesClick);
+	ButtonWidget_Add(s, &s->btns[1], 160, MOTDDisclaimerOverlay_NoClick);
+
+	s->maxVertices = Screen_CalcDefaultMaxVertices(s);
+}
+
+static const struct ScreenVTABLE MOTDDisclaimerOverlay_VTABLE = {
+	MOTDDisclaimerOverlay_Init,   Screen_NullUpdate,  Screen_NullFunc,  
+	MenuScreen_Render2,           Screen_BuildMesh,
+	Menu_InputDown,               Screen_InputUp,     Screen_TKeyPress, Screen_TText,
+	Menu_PointerDown,             Screen_PointerUp,   Menu_PointerMove, Screen_TMouseScroll,
+	MOTDDisclaimerOverlay_Layout, Screen_ContextLost, MOTDDisclaimerOverlay_ContextRecreated,
+	Menu_PadAxis
+};
+
+void MOTDDisclaimerOverlay_Show(void (*onAccepted)(void)) {
+	struct MOTDDisclaimerOverlay* s = &MOTDDisclaimerOverlay;
+	s->grabsInput = true;
+	s->closable   = true;
+	s->VTABLE     = &MOTDDisclaimerOverlay_VTABLE;
+	s->onAccepted = onAccepted;
+
+	Gui_Add((struct Screen*)s, GUI_PRIORITY_URLWARNING);
+}
+
+
+/*########################################################################################################################*
+*--------------------------------------------MOTDFoxingtonWarningOverlay--------------------------------------------------*
+*#########################################################################################################################*/
+static struct MOTDFoxingtonWarningOverlay {
+	Screen_Body
+	struct TextWidget lbls[4];
+	struct ButtonWidget btns[2];
+	struct Widget* __widgets[4 + 2];
+	void (*onAccepted)(void);
+} MOTDFoxingtonWarningOverlay;
+
+static void MOTDFoxingtonWarningOverlay_YesClick(void* screen, void* b) {
+	struct MOTDFoxingtonWarningOverlay* s = (struct MOTDFoxingtonWarningOverlay*)screen;
+	if (s->onAccepted) s->onAccepted();
+	Gui_Remove((struct Screen*)s);
+}
+
+static void MOTDFoxingtonWarningOverlay_NoClick(void* screen, void* b) {
+	struct MOTDFoxingtonWarningOverlay* s = (struct MOTDFoxingtonWarningOverlay*)screen;
+	Gui_Remove((struct Screen*)s);
+}
+
+static void MOTDFoxingtonWarningOverlay_ContextRecreated(void* screen) {
+	struct MOTDFoxingtonWarningOverlay* s = (struct MOTDFoxingtonWarningOverlay*)screen;
+	struct FontDesc titleFont, textFont;
+	Screen_UpdateVb(screen);
+
+	Gui_MakeTitleFont(&titleFont);
+	Gui_MakeBodyFont(&textFont);
+
+	TextWidget_SetConst(&s->lbls[0], "&4FINAL WARNING&f: &cAccount Responsibility", &titleFont);
+	TextWidget_SetConst(&s->lbls[1], "&cYou have been warned.&f", &textFont);
+	TextWidget_SetConst(&s->lbls[2], "&eFoxington is not responsible for any actions taken against your account.&f", &textFont);
+	TextWidget_SetConst(&s->lbls[3], "&eDo you still want to proceed and enable this feature?", &textFont);
+
+	ButtonWidget_SetConst(&s->btns[0], "Yes", &titleFont);
+	ButtonWidget_SetConst(&s->btns[1], "No",  &titleFont);
+	Font_Free(&titleFont);
+	Font_Free(&textFont);
+}
+
+static void MOTDFoxingtonWarningOverlay_Layout(void* screen) {
+	struct MOTDFoxingtonWarningOverlay* s = (struct MOTDFoxingtonWarningOverlay*)screen;
+	Overlay_LayoutLabels(s->lbls);
+	Overlay_LayoutMainButtons(s->btns);
+}
+
+static void MOTDFoxingtonWarningOverlay_Init(void* screen) {
+	struct MOTDFoxingtonWarningOverlay* s = (struct MOTDFoxingtonWarningOverlay*)screen;
+	s->widgets     = s->__widgets;
+	s->numWidgets  = 0;
+	s->maxWidgets  = Array_Elems(s->__widgets);
+
+	Overlay_AddLabels(s, s->lbls);
+	ButtonWidget_Add(s, &s->btns[0], 160, MOTDFoxingtonWarningOverlay_YesClick);
+	ButtonWidget_Add(s, &s->btns[1], 160, MOTDFoxingtonWarningOverlay_NoClick);
+
+	s->maxVertices = Screen_CalcDefaultMaxVertices(s);
+}
+
+static const struct ScreenVTABLE MOTDFoxingtonWarningOverlay_VTABLE = {
+	MOTDFoxingtonWarningOverlay_Init,   Screen_NullUpdate,  Screen_NullFunc,  
+	MenuScreen_Render2,                 Screen_BuildMesh,
+	Menu_InputDown,                     Screen_InputUp,     Screen_TKeyPress, Screen_TText,
+	Menu_PointerDown,                   Screen_PointerUp,   Menu_PointerMove, Screen_TMouseScroll,
+	MOTDFoxingtonWarningOverlay_Layout, Screen_ContextLost, MOTDFoxingtonWarningOverlay_ContextRecreated,
+	Menu_PadAxis
+};
+
+void MOTDFoxingtonWarningOverlay_Show(void (*onAccepted)(void)) {
+	struct MOTDFoxingtonWarningOverlay* s = &MOTDFoxingtonWarningOverlay;
+	s->grabsInput = true;
+	s->closable   = true;
+	s->VTABLE     = &MOTDFoxingtonWarningOverlay_VTABLE;
+	s->onAccepted = onAccepted;
+
+	Gui_Add((struct Screen*)s, GUI_PRIORITY_URLWARNING);
+}
+
+
+
+/*########################################################################################################################*
 *-----------------------------------------------------TexPackOverlay------------------------------------------------------*
 *#########################################################################################################################*/
 static struct TexPackOverlay {

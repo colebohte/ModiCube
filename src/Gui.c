@@ -127,7 +127,7 @@ static void LoadOptions(void) {
 	Gui.ShowCompass      = Options_GetBool(OPT_SHOW_COMPASS, true);
 	Gui.ShowServerName   = Options_GetBool(OPT_SHOW_SERVER_NAME, true);
 	Gui.ShowGameVersion  = Options_GetBool(OPT_SHOW_GAME_VER, true);
-	Gui.ShowMOTD         = Options_GetBool(OPT_SHOW_MOTD, true);
+	Gui.ShowMOTD         = Options_GetBool(OPT_SHOW_MOTD, false);
 	
 	Gui.RawInventoryScale = Options_GetFloat(OPT_INVENTORY_SCALE, 0.25f, 5.0f, 1.0f);
 #if defined CC_BUILD_SYMBIAN_3 || defined CC_BUILD_SYMBIAN_S60V5

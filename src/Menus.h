@@ -52,6 +52,8 @@ void HotkeyListScreen_Show(void);
 
 void MiscOptionsScreen_Show(void);
 void ModiCubeOptionsScreen_Show(void);
+void MOTDDisclaimerOverlay_Show(void (*onAccepted)(void));
+void MOTDFoxingtonWarningOverlay_Show(void (*onAccepted)(void));
 void ChatOptionsScreen_Show(void);
 void GuiOptionsScreen_Show(void);
 void GraphicsOptionsScreen_Show(void);
