@@ -12,7 +12,7 @@ Copyright 2014-2025 ClassiCube | Licensed under BSD-3
 #if defined CC_BUILD_WEB
 #define GAME_APP_ALT "ClassiCube modicube-1.0.0.rc3 web mobile"
 #define GAME_APP_NAME "ClassiCube modicube-1.0.0.rc3 web"
-#define GAME_APP_TITLE "ModiCube"
+#define GAME_APP_TITLE "ModiCube 1.0.0.rc3"
 #else
 #define GAME_APP_NAME "ClassiCube modicube-1.0.0.rc3"
 #define GAME_APP_TITLE "ClassiCube modicube-1.0.0.rc3"
