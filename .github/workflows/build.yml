@@ -1,0 +1,89 @@
+name: Build ModiCube
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - name: Linux (x86_64)
+            os: ubuntu-latest
+            target: linux
+            make_cmd: make linux RELEASE=1 -j$(nproc)
+            artifact_name: ModiCube-Linux-x86_64
+            binary: ClassiCube
+
+          - name: Windows (64-bit)
+            os: ubuntu-latest
+            target: windows-64
+            make_cmd: make windows CC=x86_64-w64-mingw32-gcc RELEASE=1 -j$(nproc)
+            artifact_name: ModiCube-Windows-x86_64
+            binary: ClassiCube.exe
+
+          - name: Windows (32-bit)
+            os: ubuntu-latest
+            target: windows-32
+            make_cmd: make windows CC=i686-w64-mingw32-gcc RELEASE=1 -j$(nproc)
+            artifact_name: ModiCube-Windows-i686
+            binary: ClassiCube.exe
+
+          - name: macOS (Universal/Intel)
+            os: macos-latest
+            target: darwin
+            make_cmd: make darwin RELEASE=1 -j$(sysctl -n hw.ncpu)
+            artifact_name: ModiCube-macOS
+            binary: ClassiCube
+
+          - name: Raspberry Pi
+            os: ubuntu-latest
+            target: rpi
+            make_cmd: make rpi RELEASE=1 -j$(nproc)
+            artifact_name: ModiCube-RaspberryPi
+            binary: ClassiCube
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies (Linux / Cross-compilers)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libx11-dev \
+            libxi-dev \
+            libgl1-mesa-dev \
+            libopenal-dev \
+            gcc-mingw-w64-x86-64 \
+            gcc-mingw-w64-i686
+
+      - name: Build ModiCube
+        run: |
+          echo "Running build command: ${{ matrix.platform.make_cmd }}"
+          ${{ matrix.platform.make_cmd }}
+
+      - name: Prepare Artifact Directory
+        run: |
+          mkdir -p build-output
+          cp ${{ matrix.platform.binary }} build-output/
+
+      - name: Compress to Zip
+        uses: vimtor/action-zip@v1.2
+        with:
+          files: build-output/${{ matrix.platform.binary }}
+          dest: ${{ matrix.platform.artifact_name }}.zip
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform.artifact_name }}
+          path: ${{ matrix.platform.artifact_name }}.zip
