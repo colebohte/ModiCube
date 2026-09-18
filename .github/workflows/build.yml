@@ -66,6 +66,15 @@ jobs:
             gcc-mingw-w64-x86-64 \
             gcc-mingw-w64-i686
 
+      - name: Debug Workspace Structure
+        run: |
+          echo "=== CURRENT WORKING DIRECTORY ==="
+          pwd
+          echo "=== REPOSITORY ROOT FILE LISTING ==="
+          ls -la
+          echo "=== SRC DIRECTORY FILE LISTING ==="
+          ls -la src/ || echo "src/ directory not found!"
+
       - name: Build ModiCube
         run: |
           echo "Running build command in src/: ${{ matrix.platform.make_cmd }}"
