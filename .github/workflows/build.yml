@@ -20,35 +20,35 @@ jobs:
             target: linux
             make_cmd: make linux RELEASE=1 -j$(nproc)
             artifact_name: ModiCube-Linux-x86_64
-            binary: ClassiCube
+            binary: src/ClassiCube
 
           - name: Windows (64-bit)
             os: ubuntu-latest
             target: windows-64
             make_cmd: make windows CC=x86_64-w64-mingw32-gcc RELEASE=1 -j$(nproc)
             artifact_name: ModiCube-Windows-x86_64
-            binary: ClassiCube.exe
+            binary: src/ClassiCube.exe
 
           - name: Windows (32-bit)
             os: ubuntu-latest
             target: windows-32
             make_cmd: make windows CC=i686-w64-mingw32-gcc RELEASE=1 -j$(nproc)
             artifact_name: ModiCube-Windows-i686
-            binary: ClassiCube.exe
+            binary: src/ClassiCube.exe
 
-          - name: macOS (Universal/Intel)
+          - name: macOS (Intel/Universal)
             os: macos-latest
             target: darwin
             make_cmd: make darwin RELEASE=1 -j$(sysctl -n hw.ncpu)
             artifact_name: ModiCube-macOS
-            binary: ClassiCube
+            binary: src/ClassiCube
 
           - name: Raspberry Pi
             os: ubuntu-latest
             target: rpi
             make_cmd: make rpi RELEASE=1 -j$(nproc)
             artifact_name: ModiCube-RaspberryPi
-            binary: ClassiCube
+            binary: src/ClassiCube
 
     steps:
       - name: Checkout Repository
@@ -68,7 +68,8 @@ jobs:
 
       - name: Build ModiCube
         run: |
-          echo "Running build command: ${{ matrix.platform.make_cmd }}"
+          echo "Running build command in src/: ${{ matrix.platform.make_cmd }}"
+          cd src
           ${{ matrix.platform.make_cmd }}
 
       - name: Prepare Artifact Directory
@@ -79,7 +80,7 @@ jobs:
       - name: Compress to Zip
         uses: vimtor/action-zip@v1.2
         with:
-          files: build-output/${{ matrix.platform.binary }}
+          files: build-output/$(basename ${{ matrix.platform.binary }})
           dest: ${{ matrix.platform.artifact_name }}.zip
 
       - name: Upload Build Artifact
