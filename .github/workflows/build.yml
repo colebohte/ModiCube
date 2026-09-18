@@ -1,4 +1,4 @@
-name: Build ModiCube
+name: Build ModiCube 
 
 on:
   push:
@@ -20,35 +20,35 @@ jobs:
             target: linux
             make_cmd: make linux RELEASE=1 -j$(nproc)
             artifact_name: ModiCube-Linux-x86_64
-            binary: src/ClassiCube
+            binary: ModiCube
 
           - name: Windows (64-bit)
             os: ubuntu-latest
-            target: windows-64
-            make_cmd: make windows CC=x86_64-w64-mingw32-gcc RELEASE=1 -j$(nproc)
+            target: mingw-64
+            make_cmd: make mingw CC=x86_64-w64-mingw32-gcc RELEASE=1 -j$(nproc)
             artifact_name: ModiCube-Windows-x86_64
-            binary: src/ClassiCube.exe
+            binary: ModiCube.exe
 
           - name: Windows (32-bit)
             os: ubuntu-latest
-            target: windows-32
-            make_cmd: make windows CC=i686-w64-mingw32-gcc RELEASE=1 -j$(nproc)
+            target: mingw-32
+            make_cmd: make mingw CC=i686-w64-mingw32-gcc RELEASE=1 -j$(nproc)
             artifact_name: ModiCube-Windows-i686
-            binary: src/ClassiCube.exe
+            binary: ModiCube.exe
 
           - name: macOS (Intel/Universal)
             os: macos-latest
             target: darwin
             make_cmd: make darwin RELEASE=1 -j$(sysctl -n hw.ncpu)
             artifact_name: ModiCube-macOS
-            binary: src/ClassiCube
+            binary: ModiCube.app
 
           - name: Raspberry Pi
             os: ubuntu-latest
             target: rpi
             make_cmd: make rpi RELEASE=1 -j$(nproc)
             artifact_name: ModiCube-RaspberryPi
-            binary: src/ClassiCube
+            binary: ModiCube
 
     steps:
       - name: Checkout Repository
@@ -66,34 +66,45 @@ jobs:
             gcc-mingw-w64-x86-64 \
             gcc-mingw-w64-i686
 
-      - name: Debug Workspace Structure
+      - name: Fix Makefile Formatting & Syntax Bugs
         run: |
-          echo "=== CURRENT WORKING DIRECTORY ==="
-          pwd
-          echo "=== REPOSITORY ROOT FILE LISTING ==="
-          ls -la
-          echo "=== SRC DIRECTORY FILE LISTING ==="
-          ls -la src/ || echo "src/ directory not found!"
+          python3 -c "
+          with open('Makefile', 'r', encoding='utf-8') as f:
+              content = f.read()
+          # Remove non-breaking spaces hidden in copy-paste
+          content = content.replace('\xa0', ' ')
+          # Fix Makefile bug where ifndef uses a dollar sign
+          content = content.replace('ifndef \$(PLAT)', 'ifndef PLAT')
+          with open('Makefile', 'w', encoding='utf-8') as f:
+              f.write(content)
+          "
 
       - name: Build ModiCube
         run: |
-          echo "Running build command in src/: ${{ matrix.platform.make_cmd }}"
-          cd src
+          echo "Running build command: ${{ matrix.platform.make_cmd }}"
           ${{ matrix.platform.make_cmd }}
 
       - name: Prepare Artifact Directory
         run: |
           mkdir -p build-output
-          cp ${{ matrix.platform.binary }} build-output/
+          if [ "${{ matrix.platform.target }}" = "darwin" ]; then
+            zip -r build-output/ModiCube-macOS.zip ModiCube.app
+          else
+            cp ${{ matrix.platform.binary }} build-output/
+          fi
 
-      - name: Compress to Zip
+      - name: Compress to Zip (Non-macOS)
+        if: matrix.platform.target != 'darwin'
         uses: vimtor/action-zip@v1.2
         with:
-          files: build-output/$(basename ${{ matrix.platform.binary }})
+          files: build-output/${{ matrix.platform.binary }}
           dest: ${{ matrix.platform.artifact_name }}.zip
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform.artifact_name }}
-          path: ${{ matrix.platform.artifact_name }}.zip
+          path: |
+            ${{ matrix.platform.artifact_name }}.zip
+            build-output/ModiCube-macOS.zip
+          if-no-files-found: ignore
