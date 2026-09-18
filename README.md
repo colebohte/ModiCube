@@ -2,7 +2,11 @@ ModiCube is a custom ClassiCube client.<br>
 This README is a modified version of [this](https://raw.githubusercontent.com/ClassiCube/ClassiCube/refs/heads/master/readme.md).
 
 # What ModiCube Changes
-* Fuck you.
+* Adds MOTD Bypass
+* Adds Skin Changer to Launcher
+* Adds Compass in F3
+* Adds In-Game Server Name in F3
+* Adds Version Name in F3
 
 # Screenshots
 
